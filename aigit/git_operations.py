@@ -11,3 +11,6 @@ def get_git_diff(repo: Repo, staged: bool = False, file_path: Optional[str] = No
 def commit_changes(repo: Repo, commit_message: str):
     repo.git.add(A=True)
     repo.index.commit(commit_message)
+
+def get_commit_diff(repo: Repo, commit_hash: str):
+    return repo.git.diff(f'{commit_hash}^!', '--word-diff=color')
