@@ -1,5 +1,5 @@
 [project]
-name = "aigit"
+name = "ai_git"
 version = "0.1.1"
 description = "Add your description here"
 authors = [
@@ -19,7 +19,7 @@ readme = "README.md"
 requires-python = ">= 3.8"
 
 [project.scripts]
-aigit = "aigit.main:app"
+aigit = "ai_git.main:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -33,4 +33,4 @@ dev-dependencies = []
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["aigit"]
+packages = ["ai_git"]

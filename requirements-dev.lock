@@ -39,7 +39,7 @@ frozenlist==1.4.1
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
-    # via aigit
+    # via ai-git
 h11==0.14.0
     # via httpcore
 httpcore==1.0.5
@@ -59,13 +59,13 @@ jsonpatch==1.33
 jsonpointer==3.0.0
     # via jsonpatch
 langchain==0.2.16
-    # via aigit
+    # via ai-git
 langchain-core==0.2.39
     # via langchain
     # via langchain-openai
     # via langchain-text-splitters
 langchain-openai==0.1.24
-    # via aigit
+    # via ai-git
 langchain-text-splitters==0.2.4
     # via langchain
 langsmith==0.1.120
@@ -105,10 +105,10 @@ requests==2.32.3
     # via langsmith
     # via tiktoken
 rich==13.8.1
-    # via aigit
+    # via ai-git
     # via typer
 setuptools==74.1.2
-    # via aigit
+    # via ai-git
 shellingham==1.5.4
     # via typer
 smmap==5.0.1
@@ -127,7 +127,7 @@ tiktoken==0.7.0
 tqdm==4.66.5
     # via openai
 typer==0.12.5
-    # via aigit
+    # via ai-git
 typing-extensions==4.12.2
     # via langchain-core
     # via openai
