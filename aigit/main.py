@@ -2,8 +2,10 @@ import typer
 from git import Repo
 from git.exc import InvalidGitRepositoryError, GitCommandError
 from typing import Optional, Dict
-from rich.console import Console
 from rich.syntax import Syntax
+from rich.table import Table
+from rich.console import Console
+from datetime import datetime
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -106,6 +108,9 @@ def diff(
         staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
         file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
 ):
+    """
+    查看代码更改
+    """
     try:
         repo = Repo('.')
         diff_output = get_git_diff(repo, staged, file_path)
@@ -128,12 +133,12 @@ def commit(
         language: str = typer.Option("English", "--lang", "-l", help="设置语言（English/Chinese）"),
 
 ):
+    """
+    使用 AI 智能生成代码更改信息
+    """
     if not check_config_exists():
         typer.echo("错误：未找到配置信息。请先运行 'aigit config' 命令进行配置。")
         raise typer.Exit(code=1)
-    """
-    显示当前Git仓库的代码更改
-    """
     try:
         repo = Repo('.')
         diff_output = get_git_diff(repo, staged, file_path)
@@ -181,5 +186,47 @@ git diff summary:
         typer.echo(f"Git命令执行错误：{str(e)}", err=True)
 
 
+@app.command()
+def log(
+    limit: int = typer.Option(10, "--limit", "-n", help="显示的提交数量"),
+    since: str = typer.Option(None, "--since", "-s", help="显示指定日期之后的提交，格式：YYYY-MM-DD"),
+    until: str = typer.Option(None, "--until", "-u", help="显示指定日期之前的提交，格式：YYYY-MM-DD"),
+):
+    """美观地显示git log"""
+    try:
+        repo = Repo('.')
+        commits = repo.iter_commits()
+
+        if since:
+            since_date = datetime.strptime(since, "%Y-%m-%d")
+            commits = filter(lambda c: c.committed_datetime > since_date, commits)
+
+        if until:
+            until_date = datetime.strptime(until, "%Y-%m-%d")
+            commits = filter(lambda c: c.committed_datetime < until_date, commits)
+
+        table = Table(title="Git Log")
+        table.add_column("提交哈希", style="cyan", no_wrap=True)
+        table.add_column("作者", style="magenta")
+        table.add_column("日期", style="green")
+        table.add_column("提交信息", style="yellow")
+
+        for _commit in list(commits)[:limit]:
+            table.add_row(
+                _commit.hexsha[:7],
+                _commit.author.name,
+                _commit.committed_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                _commit.message.split('\n')[0]
+            )
+
+        console.print(table)
+
+    except InvalidGitRepositoryError:
+        typer.echo("错误：当前目录不是有效的Git仓库。", err=True)
+    except GitCommandError as e:
+        typer.echo(f"Git命令执行错误：{str(e)}", err=True)
+
+
 if __name__ == "__main__":
     app()
+
