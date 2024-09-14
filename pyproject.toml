@@ -1,7 +1,7 @@
 [project]
-name = "ai_git"
-version = "0.1.1"
-description = "Add your description here"
+name = "ai_git_utils"
+version = "0.1.2"
+description = "AI git utils is an intelligent Git commit assistant that leverages AI to enhance your Git workflow."
 authors = [
     { name = "curry tang", email = "twn39@163.com" }
 ]
@@ -19,7 +19,7 @@ readme = "README.md"
 requires-python = ">= 3.8"
 
 [project.scripts]
-aigit = "ai_git.main:app"
+aigit = "ai_git_utils.main:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -33,4 +33,4 @@ dev-dependencies = []
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["ai_git"]
+packages = ["ai_git_utils"]

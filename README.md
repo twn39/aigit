@@ -1,6 +1,6 @@
-# AI Git
+# AI Git Utils
 
-AI-Git is an intelligent Git commit assistant that leverages AI to enhance your Git workflow.
+AI git utils is an intelligent Git commit assistant that leverages AI to enhance your Git workflow.
 It provides smart commit message generation and emoji selection to make your version control process more efficient and expressive.
 
 ## Features
@@ -12,7 +12,20 @@ It provides smart commit message generation and emoji selection to make your ver
 ## Installation
 
 ```bash
-pip install aigit
+pip install ai-git-utils
 ```
 
+## Usage
+
+Generate AI-assisted commit message
+
+``` 
+aigit commit
+```
+
+Check the help
+
+``` 
+aigit --help
+```
 
