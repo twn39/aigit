@@ -18,6 +18,8 @@ from .git_operations import get_commit_diff
 
 
 app = typer.Typer()
+model_app = typer.Typer()
+diff_app = typer.Typer()
 console = Console()
 parser = StrOutputParser()
 
@@ -46,7 +48,7 @@ fix(cli): 🐛 segmentation fault in inference
 Answer all my questions in {language}.
 '''
 
-@app.command()
+@model_app.command("add")
 def add_model(
     name: str = typer.Option(..., prompt=True),
     model: str = typer.Option(..., prompt=True),
@@ -64,19 +66,19 @@ def add_model(
     add_model_to_config(name, model_config)
     typer.echo(f"模型 '{name}' 已添加并激活。")
 
-@app.command()
+@model_app.command("remove")
 def remove_model(name: str = typer.Option(..., prompt=True)):
     """删除指定的模型配置"""
     remove_model_from_config(name)
     typer.echo(f"模型 '{name}' 已删除。")
 
-@app.command()
+@model_app.command("active")
 def activate_model(name: str = typer.Option(..., prompt=True)):
     """激活指定的模型配置"""
     set_active_model_in_config(name)
     typer.echo(f"模型 '{name}' 已激活。")
 
-@app.command()
+@model_app.command("list")
 def list_models():
     """列出所有可用的模型配置"""
     config = load_config()
@@ -92,7 +94,7 @@ def list_models():
 
     console.print(table)
 
-@app.command()
+@model_app.command("show")
 def show_config():
     """显示当前的模型配置"""
     config = load_config()
@@ -113,6 +115,7 @@ def show_config():
         table.add_row(key, str(value))
 
     console.print(table)
+
 
 @app.command()
 def commit(
@@ -175,7 +178,7 @@ git diff summary:
         typer.echo(f"Git命令执行错误：{str(e)}", err=True)
 
 
-@app.command()
+@diff_app.command("current")
 def diff(
         staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
         file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
@@ -238,7 +241,7 @@ def log(
         typer.echo(f"Git命令执行错误：{str(e)}", err=True)
 
 
-@app.command()
+@diff_app.command("commit")
 def commit_diff(commit_hash: str = typer.Argument(..., help="指定的commit哈希值")):
     """显示指定commit的diff"""
     try:
@@ -249,3 +252,7 @@ def commit_diff(commit_hash: str = typer.Argument(..., help="指定的commit哈�
         typer.echo("错误：当前目录不是有效的Git仓库。", err=True)
     except GitCommandError as e:
         typer.echo(f"Git命令执行错误：{str(e)}", err=True)
+
+
+app.add_typer(model_app, name="model", help="管理AI模型")
+app.add_typer(diff_app, name="diff", help="查看代码更改")
