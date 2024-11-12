@@ -4,8 +4,11 @@ from rich.table import Table
 from typing import Optional
 from datetime import datetime
 from .config_manager import (
-    add_model_to_config, remove_model_from_config,
-    set_active_model_in_config, get_active_model, load_config
+    add_model_to_config,
+    remove_model_from_config,
+    set_active_model_in_config,
+    get_active_model,
+    load_config
 )
 from .git_operations import get_git_diff, commit_changes
 from .ai_model import get_model
@@ -15,6 +18,7 @@ from langchain_core.output_parsers import StrOutputParser
 from git import Repo
 from git.exc import InvalidGitRepositoryError, GitCommandError
 from .git_operations import get_commit_diff
+from . import __version__
 
 
 app = typer.Typer()
@@ -26,7 +30,8 @@ parser = StrOutputParser()
 system_prompt = '''
 Craft clear and concise commit messages following the Conventional Commits standard format for git. When presented with a git diff summary, your task is to convert it into a useful commit message and add a brief description of the changes made, ensuring that lines are not longer than 74 characters. 
 Your commit message should describe the nature and purpose of the changes in a comprehensive, informative, and concise manner. The commit message should follow the format: <type>(<scope>): <subject>, starting the <subject> with an emoji from the list provided below that appropriately describes the content, and an optional body for more detailed changes or multiple changes listed briefly in bullet points. Keep the content concise and to the point.
-Emoji list:
+emoji-list:
+```
 - ✨ New feature
 - 🐛 Fix bug
 - 📚 Documentation update
@@ -40,10 +45,14 @@ Emoji list:
 - ⚡️ Performance improvement
 - ♻️ Refactor code
 - 👷 Add or update CI build system
-Example:
+```
+
+example:
+```
 fix(cli): 🐛 segmentation fault in inference
 
 - fix segmentation fault in inference
+```
 
 Answer all my questions in {language}.
 '''
@@ -253,6 +262,11 @@ def commit_diff(commit_hash: str = typer.Argument(..., help="指定的commit哈�
     except GitCommandError as e:
         typer.echo(f"Git命令执行错误：{str(e)}", err=True)
 
+
+@app.command()
+def version():
+    """显示当前软件版本"""
+    typer.echo(f"AI Git Utils V{__version__}")
 
 app.add_typer(model_app, name="model", help="管理AI模型")
 app.add_typer(diff_app, name="diff", help="查看代码更改")
