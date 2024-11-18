@@ -21,6 +21,9 @@ annotated-types==0.7.0
 anyio==4.6.2.post1
     # via httpx
     # via openai
+async-timeout==4.0.3
+    # via aiohttp
+    # via langchain
 attrs==24.2.0
     # via aiohttp
 certifi==2024.8.30
@@ -33,6 +36,8 @@ click==8.1.7
     # via typer
 distro==1.9.0
     # via openai
+exceptiongroup==1.2.2
+    # via anyio
 frozenlist==1.5.0
     # via aiohttp
     # via aiosignal
@@ -134,10 +139,13 @@ tqdm==4.67.0
 typer==0.13.0
     # via ai-git-utils
 typing-extensions==4.12.2
+    # via anyio
     # via langchain-core
+    # via multidict
     # via openai
     # via pydantic
     # via pydantic-core
+    # via rich
     # via sqlalchemy
     # via typer
 urllib3==2.2.3

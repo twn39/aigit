@@ -110,7 +110,7 @@ def show_config():
     active_model = config["active_model"]
 
     if not config["models"]:
-        typer.echo("当前没有保存的模型配置。请运行 'aigit add-model' 命令添加模型。")
+        typer.echo("当前没有保存的模型配置。请运行 'aigit model add' 命令添加模型。")
         return
 
     table = Table(title=f"当前激活的模型配置: {active_model}")
@@ -138,7 +138,7 @@ def commit(
     """
     active_config = get_active_model()
     if not active_config:
-        typer.echo("错误：未找到激活的模型配置。请先运行 'aigit add-model' 或 'aigit activate-model' 命令。")
+        typer.echo("错误：未找到激活的模型配置。请先运行 'aigit model add' 或 'aigit model active' 命令。")
         raise typer.Exit(code=1)
     try:
         repo = Repo('.')
