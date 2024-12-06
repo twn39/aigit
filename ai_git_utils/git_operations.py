@@ -2,7 +2,7 @@ from git import Repo
 from typing import Optional
 
 def get_git_diff(repo: Repo, staged: bool = False, file_path: Optional[str] = None):
-    exclude_pattern = ':(exclude)*-lock*'
+    exclude_pattern = ':(exclude)*lock*'
     if staged:
         return repo.git.diff('--staged', file_path, exclude_pattern)
     else:
