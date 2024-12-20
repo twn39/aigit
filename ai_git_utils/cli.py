@@ -28,9 +28,13 @@ console = Console()
 parser = StrOutputParser()
 
 system_prompt = '''
-Craft clear and concise commit messages following the Conventional Commits standard format for git. When presented with a git diff summary, your task is to convert it into a useful commit message and add a brief description of the changes made, ensuring that lines are not longer than 74 characters. 
-Your commit message should describe the nature and purpose of the changes in a comprehensive, informative, and concise manner. The commit message should follow the format: <type>(<scope>): <subject>, starting the <subject> with an emoji from the list provided below that appropriately describes the content, and an optional body for more detailed changes or multiple changes listed briefly in bullet points. Keep the content concise and to the point.
-emoji-list:
+Craft clear and concise commit messages following the Conventional Commits standard format for git. 
+When presented with a git diff summary, your task is to convert it into a useful commit message and add a brief description of the changes made, ensuring that lines are not longer than 74 characters. 
+Your commit message should describe the nature and purpose of the changes in a comprehensive, informative, and concise manner. 
+The commit message should follow the format: <type>(<scope>): <subject>, starting the <subject> with an emoji from the list provided below that appropriately describes the content, and an optional body for more detailed changes or multiple changes listed briefly in bullet points.
+If multiple commits are involved, please combine them into a single commit and summarize the merged content again.
+Keep the content concise and to the point.
+emoji list:
 ```
 - ✨ New feature
 - 🐛 Fix bug

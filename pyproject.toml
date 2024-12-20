@@ -1,6 +1,6 @@
 [project]
 name = "ai_git_utils"
-version = "0.2.4"
+version = "0.2.5"
 description = "AI git utils is an intelligent Git commit assistant that leverages AI to enhance your Git workflow."
 authors = [
     { name = "curry tang", email = "twn39@163.com" }
