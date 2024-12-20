@@ -8,7 +8,7 @@ from .config_manager import (
     remove_model_from_config,
     set_active_model_in_config,
     get_active_model,
-    load_config
+    load_config,
 )
 from .git_operations import get_git_diff, commit_changes
 from .ai_model import get_model
@@ -27,7 +27,7 @@ diff_app = typer.Typer()
 console = Console()
 parser = StrOutputParser()
 
-system_prompt = '''
+system_prompt = """
 Craft clear and concise commit messages following the Conventional Commits standard format for git. 
 When presented with a git diff summary, your task is to convert it into a useful commit message and add a brief description of the changes made, ensuring that lines are not longer than 74 characters. 
 Your commit message should describe the nature and purpose of the changes in a comprehensive, informative, and concise manner. 
@@ -59,7 +59,8 @@ fix(cli): 🐛 segmentation fault in inference
 ```
 
 Answer all my questions in {language}.
-'''
+"""
+
 
 @model_app.command("add")
 def add_model(
@@ -67,17 +68,18 @@ def add_model(
     model: str = typer.Option(..., prompt=True),
     base_url: str = typer.Option(..., prompt=True),
     temperature: float = typer.Option(..., prompt=True),
-    api_key: str = typer.Option(..., prompt=True)
+    api_key: str = typer.Option(..., prompt=True),
 ):
     """添加新的模型配置"""
     model_config = {
         "model": model,
         "base_url": base_url,
         "temperature": temperature,
-        "api_key": api_key
+        "api_key": api_key,
     }
     add_model_to_config(name, model_config)
     typer.echo(f"模型 '{name}' 已添加并激活。")
+
 
 @model_app.command("remove")
 def remove_model(name: str = typer.Option(..., prompt=True)):
@@ -85,11 +87,13 @@ def remove_model(name: str = typer.Option(..., prompt=True)):
     remove_model_from_config(name)
     typer.echo(f"模型 '{name}' 已删除。")
 
+
 @model_app.command("active")
 def activate_model(name: str = typer.Option(..., prompt=True)):
     """激活指定的模型配置"""
     set_active_model_in_config(name)
     typer.echo(f"模型 '{name}' 已激活。")
+
 
 @model_app.command("list")
 def list_models():
@@ -107,6 +111,7 @@ def list_models():
 
     console.print(table)
 
+
 @model_app.command("show")
 def show_config():
     """显示当前的模型配置"""
@@ -123,8 +128,8 @@ def show_config():
 
     active_config = config["models"].get(active_model, {})
     for key, value in active_config.items():
-        if key == 'api_key' and value:
-            value = value[:4] + '*' * (len(value) - 4)
+        if key == "api_key" and value:
+            value = value[:4] + "*" * (len(value) - 4)
         table.add_row(key, str(value))
 
     console.print(table)
@@ -132,42 +137,49 @@ def show_config():
 
 @app.command()
 def commit(
-        staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
-        file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
-        language: str = typer.Option("English", "--lang", "-l", help="设置语言（English/Chinese）"),
-
+    staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
+    file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
+    language: str = typer.Option(
+        "English", "--lang", "-l", help="设置语言（English/Chinese）"
+    ),
 ):
     """
     使用 AI 智能生成代码更改信息
     """
     active_config = get_active_model()
     if not active_config:
-        typer.echo("错误：未找到激活的模型配置。请先运行 'aigit model add' 或 'aigit model active' 命令。")
+        typer.echo(
+            "错误：未找到激活的模型配置。请先运行 'aigit model add' 或 'aigit model active' 命令。"
+        )
         raise typer.Exit(code=1)
     try:
-        repo = Repo('.')
+        repo = Repo(".")
         diff_output = get_git_diff(repo, staged, file_path)
 
         if not diff_output:
             typer.echo("没有检测到更改。")
         else:
-            message_content = '''
+            message_content = """
 git diff summary:
 {diff_summary}
-'''
+"""
 
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", system_prompt),
-                ("human", message_content),
-            ])
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", system_prompt),
+                    ("human", message_content),
+                ]
+            )
 
-            messages = prompt.invoke({"language": language, 'diff_summary': diff_output})
+            messages = prompt.invoke(
+                {"language": language, "diff_summary": diff_output}
+            )
 
             model = get_model()
 
             result = model.invoke(messages)
             initial_commit_message = parser.invoke(result)
-            initial_commit_message = initial_commit_message.strip('```')
+            initial_commit_message = initial_commit_message.strip("```")
             initial_commit_message = initial_commit_message.strip()
 
             typer.echo("AI 生成的提交信息：")
@@ -193,14 +205,14 @@ git diff summary:
 
 @diff_app.command("current")
 def diff(
-        staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
-        file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
+    staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
+    file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
 ):
     """
     查看代码更改
     """
     try:
-        repo = Repo('.')
+        repo = Repo(".")
         diff_output = get_git_diff(repo, staged, file_path)
 
         if not diff_output:
@@ -213,15 +225,20 @@ def diff(
     except GitCommandError as e:
         typer.echo(f"Git命令执行错误：{str(e)}", err=True)
 
+
 @app.command()
 def log(
-        limit: int = typer.Option(10, "--limit", "-n", help="显示的提交数量"),
-        since: str = typer.Option(None, "--since", "-s", help="显示指定日期之后的提交，格式：YYYY-MM-DD"),
-        until: str = typer.Option(None, "--until", "-u", help="显示指定日期之前的提交，格式：YYYY-MM-DD"),
+    limit: int = typer.Option(10, "--limit", "-n", help="显示的提交数量"),
+    since: str = typer.Option(
+        None, "--since", "-s", help="显示指定日期之后的提交，格式：YYYY-MM-DD"
+    ),
+    until: str = typer.Option(
+        None, "--until", "-u", help="显示指定日期之前的提交，格式：YYYY-MM-DD"
+    ),
 ):
     """美观地显示git log"""
     try:
-        repo = Repo('.')
+        repo = Repo(".")
         commits = repo.iter_commits()
 
         if since:
@@ -243,7 +260,7 @@ def log(
                 _commit.hexsha[:7],
                 _commit.author.name,
                 _commit.committed_datetime.strftime("%Y-%m-%d %H:%M:%S"),
-                _commit.message.split('\n')[0]
+                _commit.message.split("\n")[0],
             )
 
         console.print(table)
@@ -258,7 +275,7 @@ def log(
 def commit_diff(commit_hash: str = typer.Argument(..., help="指定的commit哈希值")):
     """显示指定commit的diff"""
     try:
-        repo = Repo('.')
+        repo = Repo(".")
         diff_output = get_commit_diff(repo, commit_hash)
         beautify_diff(diff_output)
     except InvalidGitRepositoryError:
@@ -271,6 +288,7 @@ def commit_diff(commit_hash: str = typer.Argument(..., help="指定的commit哈�
 def version():
     """显示当前软件版本"""
     typer.echo(f"AI Git Utils V{__version__}")
+
 
 app.add_typer(model_app, name="model", help="管理AI模型")
 app.add_typer(diff_app, name="diff", help="查看代码更改")
