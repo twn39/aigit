@@ -4,7 +4,7 @@ AI git utils is an intelligent Git commit assistant that leverages AI to enhance
 It provides smart commit message generation and emoji selection to make your version control process more efficient and expressive.
 
 
-![](./screen.png)
+![](https://raw.githubusercontent.com/twn39/aigit/main/screen.png)
 
 ## Features
 

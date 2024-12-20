@@ -1,9 +1,22 @@
 [project]
 name = "ai_git_utils"
-version = "0.2.5"
+version = "0.2.6"
 description = "AI git utils is an intelligent Git commit assistant that leverages AI to enhance your Git workflow."
+keywords = ["git", "ai", "aigit"]
 authors = [
     { name = "curry tang", email = "twn39@163.com" }
+]
+maintainers = [
+    { name = "curry tang", email = "twn39@163.com" }
+]
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 dependencies = [
@@ -18,11 +31,17 @@ dependencies = [
 readme = "README.md"
 requires-python = ">= 3.10"
 
+[project.urls]
+"Homepage" = "https://github.com/twn39/aigit"
+"Documentation" = "https://github.com/twn39/aigit"
+"Repository" = "https://github.com/twn39/aigit"
+"Source Code" = "https://github.com/twn39/aigit"
+
 [project.scripts]
 aigit = "ai_git_utils.main:app"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.26.3"]
 build-backend = "hatchling.build"
 
 [tool.rye]
