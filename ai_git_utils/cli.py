@@ -1,7 +1,7 @@
 import typer
 from rich.console import Console
 from rich.table import Table
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from .config_manager import (
     add_model_to_config,
@@ -10,56 +10,37 @@ from .config_manager import (
     get_active_model,
     load_config,
 )
+from litellm import completion
 from .git_operations import get_git_diff, commit_changes
 from .ai_model import get_model
 from .utils import beautify_diff, edit_commit_message
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
 from git import Repo
 from git.exc import InvalidGitRepositoryError, GitCommandError
 from .git_operations import get_commit_diff
 from . import __version__
+from pydantic import BaseModel
 
 
 app = typer.Typer()
 model_app = typer.Typer()
 diff_app = typer.Typer()
 console = Console()
-parser = StrOutputParser()
 
-system_prompt = """
-Craft clear and concise commit messages following the Conventional Commits standard format for git. 
-When presented with a git diff summary, your task is to convert it into a useful commit message and add a brief description of the changes made, ensuring that lines are not longer than 74 characters. 
-Your commit message should describe the nature and purpose of the changes in a comprehensive, informative, and concise manner. 
-The commit message should follow the format: <type>(<scope>): <subject>, starting the <subject> with an emoji from the list provided below that appropriately describes the content, and an optional body for more detailed changes or multiple changes listed briefly in bullet points.
-If multiple commits are involved, please combine them into a single commit and summarize the merged content again.
-Keep the content concise and to the point.
-emoji list:
-```
-- ✨ New feature
-- 🐛 Fix bug
-- 📚 Documentation update
-- 🚀 Deploy stuff
-- 💄 UI/style update
-- 🎨 Improve structure/format of the code
-- 🔧 Configuration modification
-- 🔥 Delete code/file
-- 🚑 Critical fix
-- ➕ Add dependency
-- ⚡️ Performance improvement
-- ♻️ Refactor code
-- 👷 Add or update CI build system
-```
 
-example:
-```
-fix(cli): 🐛 segmentation fault in inference
+class CommitMessage(BaseModel):
+    type: str
+    scope: str
+    emoji: str
+    subject: str
+    fix_items: List[str]
 
-- fix segmentation fault in inference
-```
-
-Answer all my questions in {language}.
-"""
+example_commit = CommitMessage(
+    type="fix",
+    scope="cli",
+    emoji="🐛",
+    subject="segmentation fault in inference",
+    fix_items=["fix segmentation fault in inference"],
+)
 
 
 @model_app.command("add")
@@ -159,31 +140,65 @@ def commit(
         if not diff_output:
             typer.echo("没有检测到更改。")
         else:
-            message_content = """
-git diff summary:
-{diff_summary}
-"""
 
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", system_prompt),
-                    ("human", message_content),
-                ]
+            lite_system_prompt = f'''
+Craft clear and concise commit messages following the Conventional Commits standard format for git. 
+When presented with a git diff summary, your task is to convert it into a useful commit message and add a brief description of the changes made, ensuring that lines are not longer than 74 characters. 
+Your commit message should describe the nature and purpose of the changes in a comprehensive, informative, and concise manner. 
+The commit message should return the json object, keep the content concise and to the point.
+emoji list:
+
+- ✨ New feature
+- 🐛 Fix bug
+- 📚 Documentation update
+- 🚀 Deploy stuff
+- 💄 UI/style update
+- 🎨 Improve structure/format of the code
+- 🔧 Configuration modification
+- 🔥 Delete code/file
+- 🚑 Critical fix
+- ➕ Add dependency
+- ⚡️ Performance improvement
+- ♻️ Refactor code
+- 👷 Add or update CI build system
+
+EXAMPLE JSON OUTPUT:
+{example_commit.model_dump_json(indent=2)}
+
+output only the json object and answer all my questions in {language}.
+'''
+
+            lite_message_content = f"""git diff summary: \n{diff_output}"""
+            lite_messages = [
+                {"role": "system", "content": lite_system_prompt},
+                {"role": "user", "content": lite_message_content}
+            ]
+
+            active_model = get_model()
+            model_prefix = 'openrouter'
+            model_name = active_model.get('model')
+            if model_name == 'deep-chat':
+                model_prefix = 'deepseek-chat'
+
+            response = completion(
+                model=f"{model_prefix}/{model_name}",
+                api_key=active_model.get('api_key'),
+                api_base=active_model.get('base_url'),
+                messages=lite_messages,
+                temperature=active_model.get('temperature'),
+                response_format={
+                    'type': 'json_object'
+                }
             )
-
-            messages = prompt.invoke(
-                {"language": language, "diff_summary": diff_output}
-            )
-
-            model = get_model()
-
-            result = model.invoke(messages)
-            initial_commit_message = parser.invoke(result)
-            initial_commit_message = initial_commit_message.strip("```")
-            initial_commit_message = initial_commit_message.strip()
+            json_str = response.choices[0].message.content
+            commit_message = CommitMessage.model_validate_json(json_str)
 
             typer.echo("AI 生成的提交信息：")
-            typer.echo(initial_commit_message)
+            initial_commit_message = f"""{commit_message.type}({commit_message.scope}): {commit_message.emoji} {commit_message.subject}
+            
+{chr(10).join(f'- {item}' for item in commit_message.fix_items)}
+"""
+            typer.echo()
             typer.echo("\n请编辑提交信息，保存并关闭编辑器以继续。")
 
             edited_message = edit_commit_message(initial_commit_message)
