@@ -19,9 +19,6 @@ from git.exc import InvalidGitRepositoryError, GitCommandError
 from .git_operations import get_commit_diff
 from . import __version__
 from pydantic import BaseModel
-import warnings
-
-warnings.filterwarnings("ignore", category=UserWarning)
 
 
 app = typer.Typer()
