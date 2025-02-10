@@ -10,7 +10,6 @@ from .config_manager import (
     get_active_model,
     load_config,
 )
-from litellm import completion
 from .git_operations import get_git_diff, commit_changes
 from .ai_model import get_model
 from .utils import beautify_diff, edit_commit_message
@@ -18,7 +17,9 @@ from git import Repo
 from git.exc import InvalidGitRepositoryError, GitCommandError
 from .git_operations import get_commit_diff
 from . import __version__
-from pydantic import BaseModel
+from openai import OpenAI
+from dataclasses import dataclass, asdict
+import json
 
 
 app = typer.Typer()
@@ -27,7 +28,8 @@ diff_app = typer.Typer()
 console = Console()
 
 
-class CommitMessage(BaseModel):
+@dataclass
+class CommitMessage:
     type: str
     scope: str
     emoji: str
@@ -118,7 +120,6 @@ def show_config():
 
 @app.command()
 def commit(
-    staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
     file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
     language: str = typer.Option(
         "English", "--lang", "-l", help="设置语言（English/Chinese）"
@@ -135,7 +136,8 @@ def commit(
         raise typer.Exit(code=1)
     try:
         repo = Repo(".")
-        diff_output = get_git_diff(repo, staged, file_path)
+        repo.git.add('.')
+        diff_output = get_git_diff(repo, True, file_path)
 
         if not diff_output:
             typer.echo("没有检测到更改。")
@@ -163,7 +165,7 @@ emoji list:
 - 👷 Add or update CI build system
 
 EXAMPLE JSON OUTPUT:
-{example_commit.model_dump_json(indent=2)}
+{json.dumps(asdict(example_commit), indent=2, ensure_ascii=False)}
 
 output only the json object and answer all my questions in {language}.
 '''
@@ -174,24 +176,35 @@ output only the json object and answer all my questions in {language}.
                 {"role": "user", "content": lite_message_content}
             ]
 
-            active_model = get_model()
-            model_prefix = 'openrouter'
-            model_name = active_model.get('model')
-            if model_name == 'deep-chat':
-                model_prefix = 'deepseek-chat'
 
-            response = completion(
-                model=f"{model_prefix}/{model_name}",
+            active_model = get_model()
+            model_name = active_model.get('model')
+
+            client = OpenAI(
+                base_url=active_model.get('base_url'),
                 api_key=active_model.get('api_key'),
-                api_base=active_model.get('base_url'),
+            )
+
+            response = client.chat.completions.create(
+                extra_headers={
+                    "X-Title": "AIGit",
+                },
+                extra_body={},
+                model=model_name,
                 messages=lite_messages,
                 temperature=active_model.get('temperature'),
                 response_format={
                     'type': 'json_object'
                 }
             )
+
             json_str = response.choices[0].message.content
-            commit_message = CommitMessage.model_validate_json(json_str)
+            try:
+                data = json.loads(json_str)
+            except json.JSONDecodeError:
+                typer.echo("请检查模型是否支持 json 结构化输出。")
+                raise typer.Exit(code=1)
+            commit_message = CommitMessage(**data)
 
             typer.echo("AI 生成的提交信息：")
             initial_commit_message = f"""{commit_message.type}({commit_message.scope}): {commit_message.emoji} {commit_message.subject}
@@ -220,7 +233,6 @@ output only the json object and answer all my questions in {language}.
 
 @diff_app.command("current")
 def diff(
-    staged: bool = typer.Option(False, "--staged", "-s", help="显示暂存的更改"),
     file_path: Optional[str] = typer.Option(None, "--file", "-f", help="指定文件路径"),
 ):
     """
@@ -228,7 +240,8 @@ def diff(
     """
     try:
         repo = Repo(".")
-        diff_output = get_git_diff(repo, staged, file_path)
+        repo.git.add('.')
+        diff_output = get_git_diff(repo, True, file_path)
 
         if not diff_output:
             typer.echo("没有检测到更改。")
