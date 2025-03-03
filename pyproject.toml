@@ -19,11 +19,11 @@ classifiers = [
 ]
 
 dependencies = [
-    "typer>=0.12.5",
+    "typer>=0.15.2",
     "gitpython>=3.1.44",
     "rich>=13.8.0",
-    "setuptools>=75.8.0",
-    "openai>=1.61.1",
+    "setuptools>=75.8.2",
+    "openai>=1.65.2",
 ]
 
 readme = "README.md"
