@@ -4,7 +4,7 @@
 
 **AI Git Utils** 是一个利用 AI 技术增强您 Git 工作流程的智能化工具。它能够根据您的代码变更自动生成规范、清晰且富有表现力的 Commit Message，并智能推荐相关的 Emoji，显著提升版本控制的效率和体验。
 
-![](https://raw.githubusercontent.com/twn39/aigit/main/screen.png)
+![screen](https://raw.githubusercontent.com/twn39/aigit/main/screen.png)
 
 ---
 
