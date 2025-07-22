@@ -1,6 +1,6 @@
 [project]
 name = "ai_git_utils"
-version = "0.3.9"
+version = "0.4.0"
 description = "AI git utils is an intelligent Git commit assistant that leverages AI to enhance your Git workflow."
 keywords = ["git", "ai", "aigit"]
 authors = [
