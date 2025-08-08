@@ -24,7 +24,7 @@ distro==1.9.0
     # via openai
 gitdb==4.0.11
     # via gitpython
-gitpython==3.1.44
+gitpython==3.1.45
     # via ai-git-utils
 h11==0.14.0
     # via httpcore
@@ -41,7 +41,9 @@ markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-openai==1.97.0
+openai==1.99.3
+    # via ai-git-utils
+pip==25.2
     # via ai-git-utils
 pydantic==2.10.5
     # via openai
@@ -49,7 +51,7 @@ pydantic-core==2.27.2
     # via pydantic
 pygments==2.18.0
     # via rich
-rich==14.0.0
+rich==14.1.0
     # via ai-git-utils
     # via typer
 setuptools==80.9.0

@@ -1,6 +1,6 @@
 [project]
 name = "ai_git_utils"
-version = "0.4.0"
+version = "0.4.1"
 description = "AI git utils is an intelligent Git commit assistant that leverages AI to enhance your Git workflow."
 keywords = ["git", "ai", "aigit"]
 authors = [
@@ -20,10 +20,11 @@ classifiers = [
 
 dependencies = [
     "typer>=0.16.0",
-    "gitpython>=3.1.44",
-    "rich>=14.0.0",
+    "gitpython>=3.1.45",
+    "rich>=14.1.0",
     "setuptools>=80.9.0",
-    "openai>=1.97.0",
+    "openai>=1.99.3",
+    "pip>=25.2",
 ]
 
 readme = "README.md"
