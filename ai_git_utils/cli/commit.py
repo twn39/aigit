@@ -1,7 +1,6 @@
 """Commit command implementation."""
 import typer
 from typing import Optional
-from git import Repo
 from git.exc import InvalidGitRepositoryError, GitCommandError
 from ..services.commit_service import CommitService
 from ..config_manager import get_active_model

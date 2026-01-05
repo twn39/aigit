@@ -1,8 +1,6 @@
 """Commit service for handling git commit operations."""
 from typing import Optional
 from git import Repo
-from git.exc import InvalidGitRepositoryError, GitCommandError
-from ..models.commit_message import CommitMessage
 from ..git_operations import get_git_diff, commit_changes
 from ..utils import edit_commit_message
 from .ai_service import AIService

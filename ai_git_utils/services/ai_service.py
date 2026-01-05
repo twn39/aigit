@@ -1,5 +1,4 @@
 """AI service for generating commit messages."""
-from typing import Dict, Any
 from openai import OpenAI
 from ..models.commit_message import CommitMessage
 from ..config_manager import get_active_model
