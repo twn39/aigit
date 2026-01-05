@@ -1,8 +1,8 @@
 # AI Git Utils: 智能 Git Commit 助手 🚀
 
 [![PyPI version](https://badge.fury.io/py/ai-git-utils.svg)](https://badge.fury.io/py/ai-git-utils)
-[![Tests](https://img.shields.io/badge/tests-69%20passing-brightgreen)](tests/)
-[![Coverage](https://img.shields.io/badge/coverage-89%25-yellow)](tests/)
+[![Tests](https://github.com/twn39/aigit/actions/workflows/test.yml/badge.svg)](https://github.com/twn39/aigit/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/twn39/aigit/branch/main/graph/badge.svg)](https://codecov.io/gh/twn39/aigit)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
