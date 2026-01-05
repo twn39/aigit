@@ -1,6 +1,5 @@
 """Additional unit tests for utils module."""
 import pytest
-from unittest.mock import patch, MagicMock
 from ai_git_utils.utils import beautify_diff, ALLOWED_EDITORS
 
 

@@ -1,6 +1,5 @@
 """Integration tests for diff command."""
 import pytest
-from pathlib import Path
 from typer.testing import CliRunner
 from ai_git_utils.cli.app import app
 

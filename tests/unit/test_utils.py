@@ -1,6 +1,6 @@
 """Unit tests for utils module."""
 import pytest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -62,7 +62,7 @@ class TestUtils:
         initial_message = "Initial commit message"
         
         # Mock subprocess.run to raise CalledProcessError
-        mock_run = mocker.patch(
+        mocker.patch(
             'ai_git_utils.utils.subprocess.run',
             side_effect=CalledProcessError(1, 'vim')
         )

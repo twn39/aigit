@@ -1,6 +1,5 @@
 """Integration tests for log command."""
 import pytest
-from pathlib import Path
 from datetime import datetime
 from typer.testing import CliRunner
 from ai_git_utils.cli.app import app

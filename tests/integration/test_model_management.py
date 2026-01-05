@@ -3,7 +3,6 @@ import pytest
 import json
 import tempfile
 import os
-from pathlib import Path
 
 
 @pytest.mark.integration

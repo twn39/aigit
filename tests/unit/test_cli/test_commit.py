@@ -1,5 +1,4 @@
 """Unit tests for commit command."""
-import pytest
 from typer.testing import CliRunner
 from unittest.mock import Mock, patch
 from ai_git_utils.cli.app import app
@@ -101,7 +100,7 @@ class TestCommitCommand:
                 mock_service_class.return_value = mock_service
                 mock_service.prepare_commit_message.return_value = "feat: test commit"
                 
-                result = runner.invoke(app, ["commit", "--file", "test.py"])
+                runner.invoke(app, ["commit", "--file", "test.py"])
                 
                 mock_service.prepare_commit_message.assert_called_once_with(".", "test.py", "English")
 
@@ -122,6 +121,6 @@ class TestCommitCommand:
                 mock_service_class.return_value = mock_service
                 mock_service.prepare_commit_message.return_value = "feat: 测试提交"
                 
-                result = runner.invoke(app, ["commit", "--lang", "Chinese"])
+                runner.invoke(app, ["commit", "--lang", "Chinese"])
                 
                 mock_service.prepare_commit_message.assert_called_once_with(".", None, "Chinese")

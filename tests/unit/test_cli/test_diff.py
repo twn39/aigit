@@ -1,7 +1,6 @@
 """Unit tests for diff command."""
 import pytest
 from typer.testing import CliRunner
-from unittest.mock import patch, MagicMock
 from ai_git_utils.cli.diff import diff_app
 
 

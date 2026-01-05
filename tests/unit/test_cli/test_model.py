@@ -1,7 +1,6 @@
 """Unit tests for model command."""
 import pytest
 from typer.testing import CliRunner
-from unittest.mock import patch, MagicMock
 from ai_git_utils.cli.model import model_app
 
 

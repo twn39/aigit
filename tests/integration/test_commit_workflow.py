@@ -1,6 +1,5 @@
 """Integration tests for commit workflow."""
 import pytest
-from pathlib import Path
 from ai_git_utils.services.commit_service import CommitService
 
 
@@ -28,7 +27,6 @@ def another_function():
         os.environ['OPENAI_MODEL'] = test_env_vars['model']
         
         # Create a temporary config file
-        from ai_git_utils.config_manager import CONFIG_FILE, save_config
         import tempfile
         import json
         
@@ -92,7 +90,6 @@ def another_function():
         os.environ['OPENAI_MODEL'] = test_env_vars['model']
         
         # Setup temporary config
-        from ai_git_utils.config_manager import save_config
         import tempfile
         import json
         

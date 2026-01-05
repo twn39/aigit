@@ -1,6 +1,5 @@
 """Unit tests for CommitService."""
-import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from ai_git_utils.services.commit_service import CommitService
 from ai_git_utils.models.commit_message import CommitMessage
 
