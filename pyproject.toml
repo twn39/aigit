@@ -49,3 +49,9 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["ai_git_utils"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.10",
+    "ty>=0.0.8",
+]
