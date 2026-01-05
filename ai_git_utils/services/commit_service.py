@@ -13,14 +13,14 @@ class CommitService:
         """Initialize commit service."""
         self.ai_service = AIService()
     
-    def create_commit(
+    def prepare_commit_message(
         self,
         repo_path: str = ".",
         file_path: Optional[str] = None,
         language: str = "English"
-    ) -> bool:
+    ) -> Optional[str]:
         """
-        Create a commit with AI-generated message.
+        Prepare commit message with AI-generated content.
         
         Args:
             repo_path: Path to git repository
@@ -28,7 +28,7 @@ class CommitService:
             language: Output language for commit message
             
         Returns:
-            True if commit was successful, False otherwise
+            Edited commit message string, or None if no changes detected
             
         Raises:
             InvalidGitRepositoryError: If not a valid git repository
@@ -42,7 +42,7 @@ class CommitService:
         
         if not diff_output:
             print("No changes detected.")
-            return False
+            return None
         
         # Generate commit message using AI
         commit_message = self.ai_service.generate_commit_message(
@@ -54,6 +54,27 @@ class CommitService:
         initial_message = commit_message.to_string()
         edited_message = edit_commit_message(initial_message)
         
-        # Commit changes
-        commit_changes(repo, edited_message)
+        return edited_message
+    
+    def commit_changes(
+        self,
+        repo_path: str = ".",
+        commit_message: str = ""
+    ) -> bool:
+        """
+        Commit changes with the given message.
+        
+        Args:
+            repo_path: Path to git repository
+            commit_message: Commit message to use
+            
+        Returns:
+            True if commit was successful
+            
+        Raises:
+            InvalidGitRepositoryError: If not a valid git repository
+            GitCommandError: If git command fails
+        """
+        repo = Repo(repo_path)
+        commit_changes(repo, commit_message)
         return True

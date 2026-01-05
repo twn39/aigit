@@ -20,12 +20,24 @@ def commit(
     
     try:
         service = CommitService()
-        success = service.create_commit(".", file_path, language)
         
-        if success:
+        # Prepare commit message
+        commit_message = service.prepare_commit_message(".", file_path, language)
+        
+        if commit_message is None:
+            typer.echo("没有检测到更改。")
+            return
+        
+        # Show the edited commit message
+        typer.echo("\n编辑后的提交信息：")
+        typer.echo(commit_message)
+        
+        # Ask for confirmation
+        if typer.confirm("\n确认提交这些更改？"):
+            service.commit_changes(".", commit_message)
             typer.echo("更改已成功提交！")
         else:
-            typer.echo("没有检测到更改。")
+            typer.echo("提交已取消。")
             
     except InvalidGitRepositoryError:
         typer.echo("错误：当前目录不是有效的Git仓库。", err=True)
