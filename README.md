@@ -1,6 +1,10 @@
 # AI Git Utils: 智能 Git Commit 助手 🚀
 
 [![PyPI version](https://badge.fury.io/py/ai-git-utils.svg)](https://badge.fury.io/py/ai-git-utils)
+[![Tests](https://img.shields.io/badge/tests-69%20passing-brightgreen)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-89%25-yellow)](tests/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **AI Git Utils** 是一个利用 AI 技术增强您 Git 工作流程的智能化工具。它能够根据您的代码变更自动生成规范、清晰且富有表现力的 Commit Message，并智能推荐相关的 Emoji，显著提升版本控制的效率和体验。
 
@@ -22,7 +26,7 @@
 
 ## 🛠️ 安装
 
-确保您已安装 Python 3.8+。然后通过 pip 安装：
+确保您已安装 Python 3.10+。然后通过 pip 安装：
 
 ```bash
 pip install ai-git-utils
@@ -73,6 +77,72 @@ aigit commit --lang Chinese
 aigit commit --file path/to/your/file.py
 ```
 
+## 🧪 测试
+
+本项目使用 pytest 进行测试，包含单元测试和集成测试。
+
+### 运行所有测试
+
+```bash
+# 使用 uv 运行测试
+uv run pytest
+
+# 或使用 pip 安装依赖后运行
+pytest
+```
+
+### 查看测试覆盖率
+
+```bash
+# 查看终端覆盖率报告
+uv run pytest --cov=ai_git_utils --cov-report=term-missing
+
+# 生成 HTML 覆盖率报告
+uv run pytest --cov=ai_git_utils --cov-report=html
+open htmlcov/index.html
+```
+
+### 运行特定类型的测试
+
+```bash
+# 只运行单元测试
+uv run pytest -m unit
+
+# 只运行集成测试
+uv run pytest -m integration
+
+# 运行需要 AI API 的测试（需要配置环境变量）
+uv run pytest -m requires_ai
+```
+
+### 并行运行测试
+
+```bash
+# 使用多核并行运行测试（更快）
+uv run pytest -n auto
+```
+
+### 测试覆盖率目标
+
+- **当前覆盖率**: 89% (315/353 statements)
+- **目标覆盖率**: 90%+
+
+
+### 环境变量配置
+
+运行集成测试时，需要配置以下环境变量（创建 `.env.test` 文件）：
+
+```bash
+OPENAI_API_KEY=your-api-key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o
+```
+
+## 🔄 持续集成
+
+工作流配置位于 [`.github/workflows/test.yml`](.github/workflows/test.yml)
+
+
 ## 🤝 贡献
 
 欢迎各种形式的贡献！如果您有任何建议、发现 Bug 或想改进功能，请随时：
@@ -82,3 +152,9 @@ aigit commit --file path/to/your/file.py
 3. 提交您的更改 (`aigit commit` 😉)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 提交 Pull Request
+
+**注意**: 提交 PR 前，请确保：
+- 所有测试通过 (`uv run pytest`)
+- 代码覆盖率不低于当前水平
+- 遵循项目的代码风格
+- GitHub Actions 检查通过
