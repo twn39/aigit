@@ -53,8 +53,15 @@ jobs:
     
     - name: Check coverage threshold
       run: |
-        coverage=$(uv run pytest --cov=ai_git_utils --cov-report=term | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
+        # Use pytest-cov to get the total coverage percentage
+        # The output format is: TOTAL <stmts> <miss> <branch> <brpart> <cover>
+        # awk '{print $6}' extracts the <cover> column (e.g., "88%")
+        coverage=$(uv run pytest --cov=ai_git_utils --cov-report=term | grep "TOTAL" | awk '{print $6}' | sed 's/%//')
         echo "Coverage: $coverage%"
+        if [ -z "$coverage" ]; then
+          echo "❌ Failed to extract coverage percentage"
+          exit 1
+        fi
         if (( $(echo "$coverage < 85" | bc -l) )); then
           echo "❌ Coverage $coverage% is below 85%"
           exit 1
